@@ -571,6 +571,17 @@ static void cancel_delayed_block(CWDelayedBlockHandle delayedHandle)
     }];
 }
 
+- (void)displayNotificationWithView:(UIView *)view forDuration:(NSTimeInterval)duration completion:(void (^)(void))completion
+{
+    [self displayNotificationWithView:view completion:^{
+        self.dismissHandle = perform_block_after_delay(duration, ^{
+            [self dismissNotification];
+            [completion invoke];
+        });
+    }];
+}
+
+
 - (void)dismissNotificationWithCompletion:(void (^)(void))completion
 {
     if (self.notificationIsShowing) {
