@@ -13,6 +13,7 @@
  */
 typedef void(^CWCompletionBlock)(void);
 
+
 # pragma mark - ScrollLabel
 
 /**
@@ -108,6 +109,8 @@ typedef NS_ENUM(NSInteger, CWNotificationAnimationType) {
 @property (strong, nonatomic) UIView *statusBarView;
 /// The block that gets triggered when the notification is tapped.
 @property (copy, nonatomic) CWCompletionBlock notificationTappedBlock;
+@property (copy, nonatomic) CWCompletionBlock notificationSwipeUpBlock;
+
 /// Indicates whether the notification is currently being shown.
 @property (nonatomic) BOOL notificationIsShowing;
 /// Indicates whether the notification is currently dismissing.

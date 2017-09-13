@@ -178,6 +178,7 @@ static void cancel_delayed_block(CWDelayedBlockHandle delayedHandle)
 @interface CWStatusBarNotification()
 
 @property (strong, nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
+@property (strong, nonatomic) UISwipeGestureRecognizer *swipeGestureRecognizer;
 @property (strong, nonatomic) CWDelayedBlockHandle dismissHandle;
 @property (assign, nonatomic) BOOL isCustomView;
 
@@ -220,6 +221,10 @@ static void cancel_delayed_block(CWDelayedBlockHandle delayedHandle)
         self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(notificationTapped:)];
         self.tapGestureRecognizer.numberOfTapsRequired = 1;
 
+
+        self.swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeFrom:)];
+        self.swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
+
         // create default tap block
         __weak typeof(self) weakSelf = self;
         self.notificationTappedBlock = ^(void) {
@@ -227,6 +232,13 @@ static void cancel_delayed_block(CWDelayedBlockHandle delayedHandle)
                 [weakSelf dismissNotification];
             }
         };
+
+        self.notificationSwipeUpBlock = ^(void) {
+            if (!weakSelf.notificationIsDismissing) {
+                [weakSelf dismissNotification];
+            }
+        };
+
     }
     return self;
 }
@@ -323,6 +335,12 @@ static void cancel_delayed_block(CWDelayedBlockHandle delayedHandle)
     [self.notificationTappedBlock invoke];
 }
 
+- (void)handleSwipeFrom: (UISwipeGestureRecognizer *)recognizer {
+    if (recognizer.direction == UISwipeGestureRecognizerDirectionUp) {
+        [self.notificationSwipeUpBlock invoke];
+    }
+}
+
 # pragma mark - display helpers
 
 - (void)setupNotificationView:(UIView *)view
@@ -330,6 +348,8 @@ static void cancel_delayed_block(CWDelayedBlockHandle delayedHandle)
     view.clipsToBounds = YES;
     view.userInteractionEnabled = YES;
     [view addGestureRecognizer:self.tapGestureRecognizer];
+    [view addGestureRecognizer:self.swipeGestureRecognizer];
+
     switch (self.notificationAnimationInStyle) {
         case CWNotificationAnimationStyleTop:
             view.frame = [self getNotificationLabelTopFrame];
