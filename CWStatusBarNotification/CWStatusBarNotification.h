@@ -110,6 +110,7 @@ typedef NS_ENUM(NSInteger, CWNotificationAnimationType) {
 /// The block that gets triggered when the notification is tapped.
 @property (copy, nonatomic) CWCompletionBlock notificationTappedBlock;
 @property (copy, nonatomic) CWCompletionBlock notificationSwipeUpBlock;
+@property (copy, nonatomic) CWCompletionBlock notificationManualDismissBlock;
 
 /// Indicates whether the notification is currently being shown.
 @property (nonatomic) BOOL notificationIsShowing;
