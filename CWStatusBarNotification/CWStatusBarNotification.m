@@ -234,11 +234,6 @@ static void cancel_delayed_block(CWDelayedBlockHandle delayedHandle)
                 [weakSelf dismissNotification];
             }
         };
-
-        self.notificationManualDismissBlock = ^(void) {
-
-        }
-
     }
     return self;
 }
