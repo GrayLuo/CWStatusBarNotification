@@ -522,6 +522,7 @@ static void cancel_delayed_block(CWDelayedBlockHandle delayedHandle)
     }];
 }
 
+
 - (void)displayNotificationWithAttributedString:(NSAttributedString *)attributedString completion:(void (^)(void))completion
 {
     [self displayNotificationWithMessage:[attributedString string] completion:completion];
@@ -617,6 +618,38 @@ static void cancel_delayed_block(CWDelayedBlockHandle delayedHandle)
         if (completion) {
             completion();
         }
+    }
+}
+- (void)dismissNotificationWithCompletionWithoutAnimation:(void (^)(void))completion
+{
+    if (self.notificationIsShowing) {
+        cancel_delayed_block(self.dismissHandle);
+        self.notificationIsDismissing = YES;
+
+        UIView *view = self.isCustomView ? self.customView : self.notificationLabel;
+        [view removeFromSuperview];
+        [self.statusBarView removeFromSuperview];
+        [self.notificationWindow setHidden:YES];
+        self.notificationWindow = nil;
+        view = nil;
+        self.notificationIsShowing = NO;
+        self.notificationIsDismissing = NO;
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
+        if (completion) {
+            completion();
+        }
+    } else {
+        if (completion) {
+            completion();
+        }
+    }
+}
+
+- (void)dismissNotificationWithoutAnimation {
+    [self dismissNotificationWithCompletionWithoutAnimation:nil];
+    if (self.notificationManualDismissBlock != nil) {
+        [self.notificationManualDismissBlock invoke];
     }
 }
 
